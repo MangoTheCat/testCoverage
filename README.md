@@ -19,3 +19,6 @@ library(testCoverage)
 
 cranCoverage("stringr")
 ```
+
+#License
+Clear BSD

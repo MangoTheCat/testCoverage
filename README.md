@@ -7,17 +7,33 @@ R Code Coverage Package
 #Install
 Installation from github requires the devtools package to be installed.
 ```
-install.packages(c("devtools", "testthat"))
-install_github("MangoTheCat/testCoverage")
+#Install devtools for devtools::install_github
+install.packages("devtools")
+
+#Install a unit test framework
+install.packages("testthat")
+
+#Install testCoverage
+devtools::install_github("MangoTheCat/testCoverage")
 ```
 
 #Quick Start
-Try out `cranCoverage`. If a package tests features that require suggested packages they will need to be installed or misleading results will be produced.
+Try out `cranCoverage`.
+
+If a package tests features that require suggested packages they will need to be installed or misleading results will be produced.
 ```
-library("testthat")
+#Load a unit testing framework and testCoverage.
+library(testthat)
 library(testCoverage)
 
+#Install all dependencies of the test package.
+#You may wish to use development mode to avoid polluting your library.
+#devtools::dev_mode(on = TRUE)
+install.packages("stringr", dependencies = TRUE)
+
+#Run testCoverage.
 cranCoverage("stringr")
+
 ```
 
 #License

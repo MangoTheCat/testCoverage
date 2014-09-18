@@ -26,6 +26,15 @@
 #' \code{\link{cranCoverage}}
 #' @author Mango Solutions\email{support@@mango-solutions.com}
 #' @export
-testCoverage <- function(source.files, test.files, ...) {
-  reportCoverage(sourcefiles = source.files, executionfiles = test.files, ...)
+testCoverage <- function(source.files=dir("R", full=TRUE), test.files=dir("tests/testthat/", full=TRUE), ...) {
+  if(any(grepl("testthat", test.files))) {
+    if(!require(testthat)) stop("Package 'testthat' must be installed and loaded.")
+    orig_dir <- getwd()
+    source.files <- file.path(orig_dir, source.files)
+    test.files <- file.path(orig_dir, test.files)
+    setwd(file.path("tests", "testthat"))
+  }
+  res <- reportCoverage(sourcefiles = source.files, executionfiles = test.files, ...)
+  setwd(orig_dir)
+  res
 }

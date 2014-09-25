@@ -1,6 +1,6 @@
 # SVN revision:   $
-# Date of last change: 2013-09-29 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-25 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
 # Copyright Mango Solutions, Chippenham, UK 2013
@@ -142,7 +142,14 @@ recurseSetupTrace <- function(e, envname = '.g', pos = integer(0)) {
     
     gpd <- get("gpd", envir = get(envname))
     
-    e[[pos]] <- as.symbol(gpd$text[gpd$replText == paste0("`", dpx, "`")])
+	## If it's something like `%>%`, don't quote it again
+	## Congratulations to Tal Galili
+	matchingSymbol <- gpd$text[gpd$replText == paste0("`", dpx, "`")]
+	if(grepl("^`.*`$", matchingSymbol)){
+	  e[[pos]] <- parse(text=matchingSymbol)[[1]]
+	} else {
+      e[[pos]] <- as.symbol(matchingSymbol)
+	}
   }
   
   if (is.recursive(x)) {

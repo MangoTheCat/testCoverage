@@ -1,6 +1,6 @@
 # SVN revision:   $
-# Date of last change: 2014-06-04 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-25 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
 # Copyright Mango Solutions, Chippenham, UK 2013
@@ -149,6 +149,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     if (is.null(rv)) {
       fcat(" ", fileid, basename(sourcefile), "is empty, skipped", 
            verbose = verbose)
+		   
       next
     }
     
@@ -158,8 +159,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     #rv$updated_env <- NULL
     #.g$files[[basename(sourcefile)]] <- rv
     
-    fcat(" Evaluating traced function...\n", verbose = verbose)
-    
+    fcat(" Evaluating traced function...\n", verbose = verbose)    
     eval(tracedExpression, .GlobalEnv)
     
     thisNumFunDefInSrc <- nrow(read.table(.g$outputfile))
@@ -182,6 +182,11 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     sourceCodeList[[fileid]] <- c(class = tabClass, id = fileid, code = buildHTMLForParsedCode(sourcefile, gpd, metastring = fileid, idtouse = idsSetHere))
     sourceFileList[[fileid]] <- c(class = tabClass, id = fileid, name = basename(sourcefile))
   }
+  
+  ## Remove NULL elements due to empty files
+  ## If this isn't done, the source file list and the output tables get out of sync.
+  sourceFileList <- sourceFileList[!sapply(sourceFileList, is.null)]
+  sourceCodeList <- sourceCodeList[!sapply(sourceCodeList, is.null)]
   
   ## this contains the output from eval-ing the source files themselves
   ## e.g. assigning functions
@@ -293,6 +298,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   }
 
   # Compute coverage -----------------------------------------------------------
+
   names(otables) <- basename(executionfiles)
   rownames(table_of_execution)[-1] <- basename(executionfiles)
   otablesNameless <- lapply(otables, function(z) {

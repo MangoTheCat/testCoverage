@@ -1,6 +1,6 @@
 # SVN revision:   $
-# Date of last change: 2014-09-25 $
-# Last changed by: $LastChangedBy: ttaverner $
+# Date of last change: 2014-06-04 $
+# Last changed by: $LastChangedBy: ccampbell $
 # 
 # Original author: ttaverner
 # Copyright Mango Solutions, Chippenham, UK 2013
@@ -121,7 +121,8 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
                             writereport = TRUE, clean = FALSE, ignorelist = "", 
                             verbose = TRUE, traceonce = TRUE, 
                             refnamespaces = NULL, isrunit = FALSE) {
-  
+							
+							
   .g <<- new.env()
   .g$verbose <- verbose
   .g$ignorelist <- ignorelist
@@ -141,15 +142,22 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   # Iterate through source files -----------------------------------------------
   for (fileid in seq(length = length(sourcefiles))) {
     
+    # Auto select first file.
+    if(fileid == 1) 
+      tabClass <- "active"
+    else
+      tabClass <- ""
+	  
     sourcefile <- sourcefiles[fileid]
     fcat(" ", fileid, basename(sourcefile), "... ", verbose = verbose)
     
     rv <- createTracedExpression(sourcefile = sourcefile, fileid = fileid, 
                                  envname = '.g')
     if (is.null(rv)) {
-      fcat(" ", fileid, basename(sourcefile), "is empty, skipped", 
+      fcat(" ", fileid, basename(sourcefile), "is empty, skipped\n", 
            verbose = verbose)
-		   
+		sourceCodeList[[fileid]] <- c(class = tabClass, id = fileid, code =  paste0(readLines(sourcefile), collapse = "\n"))
+		sourceFileList[[fileid]] <- c(class = tabClass, id = fileid, name = basename(sourcefile))		   
       next
     }
     
@@ -172,21 +180,10 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     
     ## only generate span ids that are actually set
     idsSetHere <- .g$idsSet[.g$idsSet[, 1] == fileid, 2, drop = TRUE]
-    
-    # Auto select first file.
-    if(fileid == 1) 
-      tabClass <- "active"
-    else
-      tabClass <- ""
 
     sourceCodeList[[fileid]] <- c(class = tabClass, id = fileid, code = buildHTMLForParsedCode(sourcefile, gpd, metastring = fileid, idtouse = idsSetHere))
     sourceFileList[[fileid]] <- c(class = tabClass, id = fileid, name = basename(sourcefile))
   }
-  
-  ## Remove NULL elements due to empty files
-  ## If this isn't done, the source file list and the output tables get out of sync.
-  sourceFileList <- sourceFileList[!sapply(sourceFileList, is.null)]
-  sourceCodeList <- sourceCodeList[!sapply(sourceCodeList, is.null)]
   
   ## this contains the output from eval-ing the source files themselves
   ## e.g. assigning functions
@@ -194,28 +191,41 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   ## CCT-7, remove the function definition code
   .g$idsSet <- .g$idsSet[!(paste(.g$idsSet[, 1], .g$idsSet[, 2]) %in% 
                              paste(funDefInSrc[, 1], funDefInSrc[, 2])), , drop = FALSE]
-  strIDsSets <- .g$idsSet
-  strIDsSet <- do.call(paste, c(data.frame(.g$idsSet), sep = "_"))
+  strIDsSets <- data.frame(.g$idsSet)
+  ## This is a long vector that looks like c("2_71", "2_83", "2_86", "2_108", "2_304", ...)
+  ## Contains symbol names  
+  strIDsSet <- do.call(paste, c(data.frame(.g$idsSet), sep = "_"))  
+  ## This is updated when strIDsSet names are "hit"
   sumIDsHit <- rep(0, length(strIDsSet))
-  
+
+   
   unitTestList <- list()
-  if(isrunit)
+  if(isrunit){
     attr(unitTestList, "testFramework") <- "RUnit"
-  else
+  } else {
     attr(unitTestList, "testFramework") <- "testthat"
+  }
   
   allTraces <- vector("list", length=length(executionfiles))
   sumTraces <- c()
   
-  ##
-  source_file_ids <- sort(unique(strIDsSets[, 1]))
+  ## This assumes the "1:n" source file naming scheme.
+  source_file_ids <- seq(length=length(sourcefiles))## sort(unique(strIDsSets[, 1]))
+  
+  ## Adding "empty" levels ensures files with no tests get included properly.
+  ## This is due to the use of table() to count hits below.
+  strIDsSets[,1] <- factor(strIDsSets[, 1], levels = source_file_ids)  
+  	
   table_of_execution <- matrix(table(strIDsSets[, 1]), nrow = 1, 
                                ncol = length(source_file_ids))
-  colnames(table_of_execution) <- basename(sourcefiles)[ source_file_ids ]
+  colnames(table_of_execution) <- basename(sourcefiles) ## [ source_file_ids ]
   rownames(table_of_execution) <- 'Trace Points'
   ErrorOccurred = logical(length(executionfiles))
-  otables <- vector("list", length = length(executionfiles))
   
+  otables <- vector("list", length(executionfiles))
+  names(otables) <- basename(executionfiles)
+
+
   # Mask ::: and q() before executing tests. -----------------------------------
   if (!is.null(refnamespaces))
     `:::` <- function(pkg, name){
@@ -274,13 +284,13 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     ## add summary table to start
     idSeen <- strIDsSet %in% strOutput
     sumIDsHit <- sumIDsHit + idSeen
-    tmp.table <- table(factor(strIDsSets[idSeen, 1], levels = source_file_ids))
+    tmp.table <- table(strIDsSets[idSeen, 1])
+	
+			
     table_of_execution <- rbind( table_of_execution, tmp.table )
     otable <- table(factor(idSeen, levels = c(TRUE, FALSE)), strIDsSets[, 1])
     rownames(otable) <- c("Executed", "Not Executed")
-    colnames(otable) <- basename(sourcefiles)[ as.integer(colnames(otable)) ]
-    
-    otables[[idx]] <- otable
+    otables[[basename(executionFile)]] <- otable
     
 #     # More detailed table.
 #     otableHTML <- print.xtable(xtable(otable), type = "html", 
@@ -308,6 +318,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     return(z)
   })
   names(otablesNameless) <- NULL
+
   
   # Summary traces -------------------------------------------------------------
   sumTraces <- split(cbind(strIDsSet, ifelse(strIDsSet%in%sumTraces, "1", "")), 
@@ -315,10 +326,11 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   names(sumTraces) <- NULL
   
   # Summary object table -------------------------------------------------------
-  sumOtables <- table(factor(sumIDsHit > 0, levels = c(TRUE, FALSE)), 
+  sumOtablesMat <- table(factor(sumIDsHit > 0, levels = c(TRUE, FALSE)), 
                       strIDsSets[, 1])
-  class(sumOtables) <- "matrix"
-  sumOtables <- as.list(as.data.frame(sumOtables))
+  class(sumOtablesMat) <- "matrix"
+  
+  sumOtables <- as.list(as.data.frame(sumOtablesMat))
   names(sumOtables) <- NULL
   sumOtable <- as.vector(table(factor(do.call(rbind, sumTraces)[, 2], 
                                       levels = c("", "1"))))

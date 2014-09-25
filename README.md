@@ -10,6 +10,11 @@ Installation from github requires the devtools package to be installed.
 #Install devtools for devtools::install_github
 install.packages("devtools")
 
+# IF you are on Windows, you will also need the latest Rtools:
+#install.packages('installr'); library('installr')
+#installr::install.Rtools()
+
+
 #Install a unit test framework
 install.packages("testthat")
 

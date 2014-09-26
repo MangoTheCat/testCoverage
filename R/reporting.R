@@ -1,6 +1,6 @@
 # SVN revision:   $
-# Date of last change: 2014-06-04 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-26 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
 # Copyright Mango Solutions, Chippenham, UK 2013
@@ -191,7 +191,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   ## CCT-7, remove the function definition code
   .g$idsSet <- .g$idsSet[!(paste(.g$idsSet[, 1], .g$idsSet[, 2]) %in% 
                              paste(funDefInSrc[, 1], funDefInSrc[, 2])), , drop = FALSE]
-  strIDsSets <- data.frame(.g$idsSet)
+  dfIDsSet <- data.frame(.g$idsSet)
   ## This is a long vector that looks like c("2_71", "2_83", "2_86", "2_108", "2_304", ...)
   ## Contains symbol names  
   strIDsSet <- do.call(paste, c(data.frame(.g$idsSet), sep = "_"))  
@@ -210,13 +210,13 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   sumTraces <- c()
   
   ## This assumes the "1:n" source file naming scheme.
-  source_file_ids <- seq(length=length(sourcefiles))## sort(unique(strIDsSets[, 1]))
+  source_file_ids <- seq(length=length(sourcefiles))## sort(unique(dfIDsSet[, 1]))
   
   ## Adding "empty" levels ensures files with no tests get included properly.
   ## This is due to the use of table() to count hits below.
-  strIDsSets[,1] <- factor(strIDsSets[, 1], levels = source_file_ids)  
+  dfIDsSet[,1] <- factor(dfIDsSet[, 1], levels = source_file_ids)  
   	
-  table_of_execution <- matrix(table(strIDsSets[, 1]), nrow = 1, 
+  table_of_execution <- matrix(table(dfIDsSet[, 1]), nrow = 1, 
                                ncol = length(source_file_ids))
   colnames(table_of_execution) <- basename(sourcefiles) ## [ source_file_ids ]
   rownames(table_of_execution) <- 'Trace Points'
@@ -251,7 +251,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   for (idx in seq_along(executionfiles)) {
     
     executionFile <- executionfiles[[idx]]
-    
+
     fcat(idx, ": reading", basename(executionFile), "...", verbose = verbose)
     tryCatch({
       if (file.exists(.g$outputfile)) { unlink(.g$outputfile, force = TRUE) }
@@ -274,21 +274,20 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     # if failed .g$outputfile remain old values
     # Worse, like "test-parallel.r" in plyr, it actually does nothing and does 
     # not report an error. we have to remove the .g$outputfile of last round
-    
+
     if (file.exists(.g$outputfile)) {
       strOutput <- do.call(paste, c(read.table(.g$outputfile), sep = '_'))
     } else {
       strOutput <- character(0)
     }
-    
     ## add summary table to start
     idSeen <- strIDsSet %in% strOutput
     sumIDsHit <- sumIDsHit + idSeen
-    tmp.table <- table(strIDsSets[idSeen, 1])
+    tmp.table <- table(dfIDsSet[idSeen, 1])
 	
 			
     table_of_execution <- rbind( table_of_execution, tmp.table )
-    otable <- table(factor(idSeen, levels = c(TRUE, FALSE)), strIDsSets[, 1])
+    otable <- table(factor(idSeen, levels = c(TRUE, FALSE)), dfIDsSet[, 1])
     rownames(otable) <- c("Executed", "Not Executed")
     otables[[basename(executionFile)]] <- otable
     
@@ -299,11 +298,8 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
 #                                html.table.attributes = "")
 
     unitTestList[[idx]] <- c(id = idx, name = basename(executionFile))
-    
-    trace <- split(cbind(strIDsSet, ifelse(strIDsSet%in%strOutput, "1", "")), 
-                   strIDsSet)
-    names(trace) <- NULL
-    allTraces[[idx]] <- trace
+
+    allTraces[[idx]] <- strOutput
     sumTraces <- c(sumTraces, strOutput)
   }
 
@@ -319,25 +315,28 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   })
   names(otablesNameless) <- NULL
 
-  
+   
   # Summary traces -------------------------------------------------------------
-  sumTraces <- split(cbind(strIDsSet, ifelse(strIDsSet%in%sumTraces, "1", "")), 
+  sumTracesTable <- split(cbind(strIDsSet, ifelse(strIDsSet%in%sumTraces, "1", "")), 
                      strIDsSet)
   names(sumTraces) <- NULL
   
   # Summary object table -------------------------------------------------------
   sumOtablesMat <- table(factor(sumIDsHit > 0, levels = c(TRUE, FALSE)), 
-                      strIDsSets[, 1])
+                      dfIDsSet[, 1])
   class(sumOtablesMat) <- "matrix"
   
   sumOtables <- as.list(as.data.frame(sumOtablesMat))
   names(sumOtables) <- NULL
-  sumOtable <- as.vector(table(factor(do.call(rbind, sumTraces)[, 2], 
+  sumOtable <- as.vector(table(factor(do.call(rbind, sumTracesTable)[, 2], 
                                       levels = c("", "1"))))
+  
+  sumTags <- 1*(strIDsSet %in% sumTraces)
+  allTags <- lapply(allTraces, function(z) 1*(strIDsSet %in% z))  
   
   # Write report ---------------------------------------------------------------
   if (writereport) 
-    writeReport(unitTestList, sumTraces, allTraces, otablesNameless, sumOtables, 
+    writeReport(unitTestList, strIDsSet, sumTags, allTags, otablesNameless, sumOtables, 
                 sourceFileList, sourceCodeList, reportfile)
   
   if (clean)  

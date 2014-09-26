@@ -172,8 +172,8 @@ recurseSetupTrace <- function(e, envname = '.g', pos = integer(0)) {
 #' @rdname testCoverage-internal
 
 `_trace` <- function(idx = NULL, envname = '.g') {
-  
-  if (!missing(idx)) {
+ 
+    if (!missing(idx)) {
     
     traceRecord <- get("traceRecord", envir = get(envname))
     

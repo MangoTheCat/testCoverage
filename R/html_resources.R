@@ -1,6 +1,6 @@
 # SVN revision:   $
-# Date of last change: 2014-06-03 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-26 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
 # Copyright Mango Solutions, Chippenham, UK 2013
@@ -52,13 +52,14 @@ styleText <- '<!--<script>
     </style>'
   
 
-
-htmlBuildText <- 'docolor = function(i, bb) {
-    //$("#t_" + bb[0]).css("backgroundColor", bb[1] ? "lightgreen" : "lightpink");
-    if(bb[1]) {
-        $("#t_" + bb[0]).removeClass("fail").addClass("pass");
-    } else {
-        $("#t_" + bb[0]).removeClass("pass").addClass("fail");
+#tagList, sumTags, allTags
+htmlBuildText <- 
+'docolor = function(j, bb) {
+// $("#t_" + tagList[j]).css("backgroundColor", bb ? "lightgreen" : "lightpink");
+    if(bb > 0) {
+        $("#t_" + tagList[j]).removeClass("fail").addClass("pass");
+	} else {
+        $("#t_" + tagList[j]).removeClass("pass").addClass("fail");
     }
 };
 pbsummed = function(j, cov) {
@@ -68,16 +69,16 @@ pbsummed = function(j, cov) {
     });
 };
 $(document).ready(function() {
-    $.each(sumTraces, docolor);
+    $.each(sumTags, docolor);
     $.each(all_coverage, pbsummed);
     $("#trace_all").click(function() {
-        $.each(sumTraces, docolor);
+        $.each(sumTags, docolor);
         $.each(all_coverage, pbsummed)
     });
-    $.each(allTraces, function(i, dum) {
+    $.each(allTags, function(i, dum) {
         $("#run_" + (i + 1)).click(
             function() {
-                $.each(allTraces[i], docolor);
+                $.each(allTags[i], docolor);
                 $.each(coverage[i], function(j, cov) {
                     pct = 100 * (cov[0] / (cov[0] + cov[1]));
                     $("#progress-" + (j + 1)).progressbar({

@@ -56,11 +56,18 @@ require <- function(package, ...) {
 #' @rdname testCoverage-mask
 #' @export
 library <- function(package, ...) {
-  package <- as.character(substitute(package))
+  doChar <- "character.only" %in% names(list(...))
+  if (!doChar) {
+      package <- as.character(substitute(package))
+  }
   if (!exists("packagename")) { packagename <- "" }
   if (tolower(package) == tolower(packagename)) 
     cat("require(", package, ") ignored\n", sep = "")
-  else base::library(package = package, ..., character.only = TRUE)
+  else if (doChar) {
+      base::library(package = package, ...)
+  } else {
+      base::library(package = package, ..., character.only = TRUE)
+  }
 }
 
 # @title check whether function is in global environment, otherwise access from package

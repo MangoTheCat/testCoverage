@@ -3,7 +3,7 @@ Type: Package
 Title: Analyzing coverage of R unit tests
 Version: 0.1.02
 Date: 2014-06-04
-Author: T. Taverner, Chris Campbell, Suchen Jin <tom@jin.me.uk>
+Author: T. Taverner, Chris Campbell, Suchen Jin
 Maintainer: Mango Business Solutions <support@mango-solutions.com>
 Depends:
     R (>= 3.0.1),
@@ -17,6 +17,6 @@ Suggests:
     R.rsp
 Description: Package provides set of tools to analyze unit test coverage.
 LazyLoad: yes
-License: Clear BSD + file LICENSE
+License: LGPL
 VignetteBuilder: R.rsp
 BuildVignettes: FALSE

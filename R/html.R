@@ -105,5 +105,3 @@ $( document ).ready(function() {
     cat("Output to", reportfile, "\n")
     browseURL(reportfile)
 }
-
-

@@ -331,9 +331,7 @@ newSkeleton <- function(pkgPath, unittestdir = NULL){
   if (is.a.dir(testthats <- file.path(pkgPath, 'tests/testthat'))) {
     re$testthats <- f(testthats)
     re$testthatdir <- 'tests/testthat'
-  } 
-  
-  else if (is.a.dir(testthats <- file.path(pkgPath, 'inst/tests'))) {
+  } else if (is.a.dir(testthats <- file.path(pkgPath, 'inst/tests'))) {
     re$testthats <- f(testthats)
     re$testthatdir <- 'inst/tests'
   }

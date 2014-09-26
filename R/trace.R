@@ -319,4 +319,3 @@ createTracedExpression <- function(sourcefile, fileid, envname = '.g') {
       tracedExpression = exprTrace, 
       parsedData = gpd))
 }
-

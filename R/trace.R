@@ -142,7 +142,9 @@ recurseSetupTrace <- function(e, envname = '.g', pos = integer(0)) {
     
     gpd <- get("gpd", envir = get(envname))
     
-    e[[pos]] <- as.symbol(gpd$text[gpd$replText == paste0("`", dpx, "`")])
+#    e[[pos]] <- as.symbol(gpd$text[gpd$replText == paste0("`", dpx, "`")])
+    # `%+%` will be as.symbol changed to ``%+%`` incorrectly
+    e[[pos]] <- parse(text=gpd$text[gpd$replText == paste0("`", dpx, "`")])[[1]]
   }
   
   if (is.recursive(x)) {
@@ -302,11 +304,13 @@ createTracedExpression <- function(sourcefile, fileid, envname = '.g') {
   assign("lastTrace", value = NULL, envir = get(envname))
   
   exprTrace <- recurseSetupTrace(e = symTrace, envname = envname)
-  fcat("setting", length(gregexpr(
-    pattern = "`_trace`\\(c", as.character(exprTrace))[[1]]), 
+  fcat("setting", 
+    sum(sapply(gregexpr(pattern = "`_trace`\\(c", as.character(exprTrace)), length)),
     "trace points... \n", verbose = verbose)
   
   attr(exprTrace, "srcref") <- NULL
+  attr(exprTrace, "srcfile") <- NULL
+  attr(exprTrace, "wholeSrcref") <- NULL
   
   return(list(symbolExpression = symTrace, 
       tracedExpression = exprTrace, 

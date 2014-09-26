@@ -81,7 +81,7 @@ reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getw
     }else {
       lst = try(tools::pkgDepends(packagename), silent = TRUE)
       if (!is(lst,'try-error')){
-        for(i in lst$Depends){
+        for(i in sub(' +.*$','',lst$Depends)){
           try(base::require(i, character.only = TRUE), silent = TRUE)
         }
       }
@@ -142,7 +142,7 @@ reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getw
       executionfiles[i] <- tmp.file
     }
   }
-  
+
   sumTrace <- buildHTMLReport(sourcefiles = sourcefiles, 
     executionfiles = executionfiles, 
     reportfile = reportfile, 

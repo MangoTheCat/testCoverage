@@ -140,7 +140,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   
   # Iterate through source files -----------------------------------------------
   for (fileid in seq(length = length(sourcefiles))) {
-    
+    cat('file : ', fileid, '\n')
     sourcefile <- sourcefiles[fileid]
     fcat(" ", fileid, basename(sourcefile), "... ", verbose = verbose)
     
@@ -160,7 +160,10 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     
     fcat(" Evaluating traced function...\n", verbose = verbose)
     
-    eval(tracedExpression, .GlobalEnv)
+    settingup.source.code <- try(eval(tracedExpression, .GlobalEnv), silent=TRUE)
+    if (is(settingup.source.code,'try-error')) {
+        cat(settingup.source.code)
+    }
     
     thisNumFunDefInSrc <- nrow(read.table(.g$outputfile))
     fcat(" removing", thisNumFunDefInSrc - lastNumFunDefInSrc, 
@@ -243,9 +246,8 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
       
       if (regexpr('^runit', basename(executionFile))>0) {
         # RUnit
-        runTestFile(executionFile)
+        RUnit::runTestFile(executionFile)
       } else {
-        
         source(executionFile, local = TRUE)
       }
       fcat("OK.\n", verbose = verbose)
@@ -259,7 +261,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     # if failed .g$outputfile remain old values
     # Worse, like "test-parallel.r" in plyr, it actually does nothing and does 
     # not report an error. we have to remove the .g$outputfile of last round
-    
+
     if (file.exists(.g$outputfile)) {
       strOutput <- do.call(paste, c(read.table(.g$outputfile), sep = '_'))
     } else {

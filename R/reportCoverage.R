@@ -1,9 +1,9 @@
 # SVN revision:   
-# Date of last change: 2013-11-22
-# Last changed by: ccampbell
+# Date of last change: 2014-09-30
+# Last changed by: ttaverner
 # 
 # Original author: ttaverner
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
 #' This function reports on the test coverage provided by a suite of unit tests
@@ -54,7 +54,8 @@
 #' #unnecessary.
 #' reportCoverage(
 #'  packagedir = system.file("examples/add/", package = "testCoverage"), 
-#'  unittestdir = system.file("examples/add/inst/tests/testthat/tests1", package = "testCoverage"))
+#'  unittestdir = system.file("examples/add/inst/tests/testthat/tests1", 
+#'    package = "testCoverage"))
 #' }
 
 reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getwd(), 
@@ -81,7 +82,7 @@ reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getw
     }else {
       lst = try(tools::pkgDepends(packagename), silent = TRUE)
       if (!is(lst,'try-error')){
-        for(i in sub(' +.*$','',lst$Depends)){
+        for(i in lst$Depends){
           try(base::require(i, character.only = TRUE), silent = TRUE)
         }
       }
@@ -89,20 +90,6 @@ reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getw
   } else { packagename <<- "" }
   
   if (!missing(packagename)) {
-    
-    #setwd(unittestdir)
-    
-    #if (useexamples) {
-    #    # extract rd examples and write to an -examples directory
-    #    
-    #    packageexampledir <- paste0(packagedir, "/", packagename, "-examples")
-    #    
-    #    dir.create(packageexampledir)
-    #    
-    #    extractRdExamples(file.path(packagedir, "man"), packageexampledir)
-    #    
-    #    warning("not fully implemented")
-    #}
     
     if (!missing(sourcefiles) | !is.null(sourcefiles))  
       warning("both packagename and sourcefiles provided") 
@@ -142,10 +129,11 @@ reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getw
       executionfiles[i] <- tmp.file
     }
   }
-
+  
   sumTrace <- buildHTMLReport(sourcefiles = sourcefiles, 
     executionfiles = executionfiles, 
     reportfile = reportfile, 
+	packagename = packagename, 
     outputfile = outputfile, 
     ignorelist = ignorelist, 
     writereport = writereport, 

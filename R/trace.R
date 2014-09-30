@@ -1,8 +1,8 @@
-# Date of last change: 2014-09-30 $
+# Date of last change: 2014-09-25 $
 # Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
 
@@ -66,6 +66,7 @@ recurseInsertTrace <- function(e, envname = '.g', pos = integer(0),
         
         if (length(firstSibling) == 1 && as.character(firstSibling) %in% 
           c("~", ignorelistRepl)) {
+
           
           return(e)
           
@@ -81,7 +82,7 @@ recurseInsertTrace <- function(e, envname = '.g', pos = integer(0),
     
     idx <- 1
     
-    while(TRUE) { # TODO: check opinions on whether this is nice syntax
+    while(TRUE) {
       
       if (idx > length(getAtPos(e = e, pos = pos))) { break }
       
@@ -171,14 +172,14 @@ recurseSetupTrace <- function(e, envname = '.g', pos = integer(0)) {
 #' @rdname testCoverage-internal
 
 `_trace` <- function(idx = NULL, envname = '.g') {
-  
-  if (!missing(idx)) {
+ 
+    if (!missing(idx)) {
     
     traceRecord <- get("traceRecord", envir = get(envname))
     
     if (get("traceonce", envir = get(envname))) {
-      
-      if (paste(idx, collapse = "_") %in% traceRecord) {
+      ## A package might over-ride %in% (!)
+      if (base::`%in%`(paste(idx, collapse = "_"), traceRecord)) {
         
         return(invisible(NULL))
         
@@ -303,13 +304,14 @@ createTracedExpression <- function(sourcefile, fileid, envname = '.g') {
   # note that calls to function are currently traced although they are not instrumented
   # TODO check this is correct and prevent function from being instrumented if not needed
   # removed message to make behaviour easier to understand.
-  
+  #fcat("adding", length(gregexpr(pattern = "_trace", as.character(symTrace))[[1]]), "original trace points... ", verbose = verbose)
+
   assign("lastTrace", value = NULL, envir = get(envname))
   
   exprTrace <- recurseSetupTrace(e = symTrace, envname = envname)
   fcat("setting", length(gregexpr(
     pattern = "`_trace`\\(c", as.character(exprTrace))[[1]]), 
-    "trace points... \n", verbose = verbose)
+    "trace points... \n", verbose = verbose)	
   
   attr(exprTrace, "srcref") <- NULL
   

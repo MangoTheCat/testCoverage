@@ -1,9 +1,15 @@
-writeReport <- function(unitTestList, sumTraces, allTraces, otablesNameless, sumOtables, sourceFileList, sourceCodeList, reportfile) {
+# Date of last change: 2014-09-30 $
+# Last changed by: $LastChangedBy: ttaverner $
+# 
+# Original author: ttaverner
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
+###############################################################################
+
+writeReport <- function(unitTestList, tagList, sumTags, allTags, otablesNameless, sumOtables, sourceFileList, sourceCodeList, reportfile) {
 
 
 	# Summary Table ------------------------------------------------------------
-	sumAllTraces <- as.vector(table(factor(do.call(rbind, sumTraces)[, 2], 
-	                                     levels = c("", "1"))))
+	sumAllTraces <- table(factor(sumTags, levels=c(0, 1)))
 	sumAllTraces[1] <- sumAllTraces[1] + sumAllTraces[2]
 	sumAllTracesMat <- rbind(c(sumAllTraces, 
 	                         sprintf("%3.f%%", 100 * sumAllTraces[2]/sumAllTraces[1])))
@@ -59,13 +65,15 @@ writeReport <- function(unitTestList, sumTraces, allTraces, otablesNameless, sum
 </head>
 <body>
   <script>
-  var sumTraces = ', toJSON(sumTraces), ";\n", 
-      'var allTraces = ', toJSON(allTraces), ";\n", 
-      'var coverage = ', toJSON(otablesNameless), ";\n", 
-      'var all_coverage = ', toJSON(sumOtables), ";\n", 
-      'var sumAllTraces = ', toJSON(sumAllTraces), ";\n", 
-      htmlBuildText, 
-      '
+  var tagList = ', toJSON(tagList), ";\n", 
+  'var sumTags = ', toJSON(sumTags), ";\n", 
+  'var allTags = ', toJSON(allTags), ";\n", 
+   
+  'var coverage = ', toJSON(otablesNameless), ";\n", 
+  'var all_coverage = ', toJSON(sumOtables), ";\n", 
+  'var sumAllTraces = ', toJSON(sumAllTraces), ";\n", 
+  htmlBuildText, 
+  '
 $( document ).ready(function() {
   $(".internet-connectivity").hide();
 })

@@ -1,15 +1,15 @@
-# SVN revision:   $
-# Date of last change: 2014-06-04 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-30 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
 # @title make div
 # @param open single logical
 # @param id single logical
 # @return character html
+
 makeDiv <- function(open = TRUE, id = NULL) {
   paste0("<", if (!open) "/", "div", 
          if(!is.null(id)) paste0(" id=\"", id, "\""), ">")
@@ -21,6 +21,7 @@ makeDiv <- function(open = TRUE, id = NULL) {
 # @param id single integer identifying function being traced
 # @param metastring single integer identifying analysis script
 # @return character html
+
 makeTag <- function(open = TRUE, id = NULL, metastring = NULL) {
   tag <- "<"
   if (open) {
@@ -44,6 +45,7 @@ makeTag <- function(open = TRUE, id = NULL, metastring = NULL) {
 # @param idtouse single integer symbol on which to report
 # @param metastring single integer page to use
 # @return character matrix
+
 addTags <- function(idtags, open = TRUE, gpd, idtouse, metastring = NULL) {
   idx <- ifelse(open, 1, 3)
   gpdToken <- gpd$token
@@ -71,6 +73,7 @@ addTags <- function(idtags, open = TRUE, gpd, idtouse, metastring = NULL) {
 # @param metastring single integer
 # @param idtouse single integer
 # @return character vector
+
 buildHTMLForParsedCode <- function(fn, gpd, metastring = NULL, idtouse = NULL) {
   #text <- readLines(fn, warn = FALSE)
   text <- attr(gpd, 'srcfile')$lines
@@ -278,12 +281,6 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     colnames(otable) <- basename(sourcefiles)[ as.integer(colnames(otable)) ]
     
     otables[[idx]] <- otable
-    
-#     # More detailed table.
-#     otableHTML <- print.xtable(xtable(otable), type = "html", 
-#                                print.results = FALSE, 
-#                                sanitize.colnames.function = function(z) { z }, 
-#                                html.table.attributes = "")
 
     unitTestList[[idx]] <- c(id = idx, name = basename(executionFile))
     

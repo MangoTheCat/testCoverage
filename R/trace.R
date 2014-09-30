@@ -1,6 +1,5 @@
-# SVN revision:   $
-# Date of last change: 2013-09-29 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-30 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
 # Copyright Mango Solutions, Chippenham, UK 2013
@@ -142,9 +141,14 @@ recurseSetupTrace <- function(e, envname = '.g', pos = integer(0)) {
     
     gpd <- get("gpd", envir = get(envname))
     
-#    e[[pos]] <- as.symbol(gpd$text[gpd$replText == paste0("`", dpx, "`")])
-    # `%+%` will be as.symbol changed to ``%+%`` incorrectly
-    e[[pos]] <- parse(text=gpd$text[gpd$replText == paste0("`", dpx, "`")])[[1]]
+	## If it's something like `%>%`, don't quote it again
+	## Congratulations to Tal Galili
+	matchingSymbol <- gpd$text[gpd$replText == paste0("`", dpx, "`")]
+	if(grepl("^`.*`$", matchingSymbol)){
+	  e[[pos]] <- parse(text=matchingSymbol)[[1]]
+	} else {
+      e[[pos]] <- as.symbol(matchingSymbol)
+	}
   }
   
   if (is.recursive(x)) {
@@ -299,18 +303,15 @@ createTracedExpression <- function(sourcefile, fileid, envname = '.g') {
   # note that calls to function are currently traced although they are not instrumented
   # TODO check this is correct and prevent function from being instrumented if not needed
   # removed message to make behaviour easier to understand.
-  #fcat("adding", length(gregexpr(pattern = "_trace", as.character(symTrace))[[1]]), "original trace points... ", verbose = verbose)
-
+  
   assign("lastTrace", value = NULL, envir = get(envname))
   
   exprTrace <- recurseSetupTrace(e = symTrace, envname = envname)
-  fcat("setting", 
-    sum(sapply(gregexpr(pattern = "`_trace`\\(c", as.character(exprTrace)), length)),
+  fcat("setting", length(gregexpr(
+    pattern = "`_trace`\\(c", as.character(exprTrace))[[1]]), 
     "trace points... \n", verbose = verbose)
   
   attr(exprTrace, "srcref") <- NULL
-  attr(exprTrace, "srcfile") <- NULL
-  attr(exprTrace, "wholeSrcref") <- NULL
   
   return(list(symbolExpression = symTrace, 
       tracedExpression = exprTrace, 

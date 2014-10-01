@@ -6,8 +6,8 @@
 # Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
-  
-context("counting symbol hits in add example")
+# counting symbol hits
+cat(" --- add example ---\n")
 
 test_that("add", {
     
@@ -19,8 +19,6 @@ test_that("add", {
     
     rpt <- file.path(getwd(), "coverage_report_a0.html")
     out <- file.path(getwd(), "traceOutput_a0.txt")
-    
-    cat("  ")
     
     out_a0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "add", "R"), full.names = TRUE), 
@@ -49,8 +47,6 @@ test_that("add", {
     rpt <- file.path(getwd(), "coverage_report_a1.html")
     out <- file.path(getwd(), "traceOutput_a1.txt")
     
-    cat("  ")
-    
     out_a1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "add", "R"), full.names = TRUE),
         executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
@@ -75,7 +71,7 @@ test_that("add", {
     
 })
 
-context("counting symbol hits in fibonacci example")
+cat("\n --- fibonacci example ---")
 
 test_that("fibonacci", {
     
@@ -83,8 +79,6 @@ test_that("fibonacci", {
     
     rpt <- file.path(getwd(), "coverage_report_f0.html")
     out <- file.path(getwd(), "traceOutput_f0.txt")
-    
-    cat("  ")
     
     out_f0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "fibonacci", "R"), full.names = TRUE), 
@@ -111,9 +105,6 @@ test_that("fibonacci", {
     # tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_f1.html")
-    out <- file.path(getwd(), "traceOutput_f1.txt")
-    
-    cat("  ")
     
     out_f1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "fibonacci", "R"), full.names = TRUE),
@@ -142,8 +133,6 @@ test_that("fibonacci", {
     rpt <- file.path(getwd(), "coverage_report_f2.html")
     out <- file.path(getwd(), "traceOutput_f2.txt")
     
-    cat("  ")
-    
     out_f2 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "fibonacci", "R"), full.names = TRUE),
         executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
@@ -168,7 +157,7 @@ test_that("fibonacci", {
     
 })
 
-context("counting symbol hits in saturate example")
+cat("\n --- saturate example ---")
 
 test_that("saturate", {
     
@@ -176,8 +165,6 @@ test_that("saturate", {
     
     rpt <- file.path(getwd(), "coverage_report_s0.html")
     out <- file.path(getwd(), "traceOutputs0.txt")
-    
-    cat("  ")
     
     out_s0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "saturate", "R"), full.names = TRUE),
@@ -206,8 +193,6 @@ test_that("saturate", {
     rpt <- file.path(getwd(), "coverage_report_s1.html")
     out <- file.path(getwd(), "traceOutputs1.txt")
     
-    cat("  ")
-    
     out_s1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "saturate", "R"), full.names = TRUE),
         executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
@@ -234,8 +219,6 @@ test_that("saturate", {
     rpt <- file.path(getwd(), "coverage_report_s2.html")
     out <- file.path(getwd(), "traceOutput_s2.txt")
     
-    cat("  ")
-    
     out_s2 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "saturate", "R"), full.names = TRUE),
         executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
@@ -261,8 +244,6 @@ test_that("saturate", {
     
     rpt <- file.path(getwd(), "coverage_report_s3.html")
     out <- file.path(getwd(), "traceOutput_s3.txt")
-    
-    cat("  ")
     
     out_s3 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
             "saturate", "R"), full.names = TRUE),
@@ -292,6 +273,7 @@ test_that("saturate", {
     expect_that(out_s3, equals(s3ex))
 })
 
+cat("\n --- testCoverage utilities ---")
 
 context("check invalid package structure throws error")
 

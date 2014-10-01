@@ -1,9 +1,9 @@
-# SVN revision:   
-# Date of last change: 2014-08-01
+
+# Date of last change: 2014-10-01
 # Last changed by: ccampbell
 # 
 # Original author: ccampbell
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
 context("tracing utilities")
@@ -61,7 +61,7 @@ test_that("createTracedExpression", {
 
     # test 1
     
-    testG <- new.env()
+    testG <<- new.env()
     testG$verbose <- FALSE
     testG$ignorelist <- ""
     testG$replText <- ""
@@ -105,12 +105,12 @@ test_that("recurseInsertTrace", {
         function ( x , y )  {  `_1_29`  + `_1_32`  })
 
     testG <<- new.env()
-    testG$verbose <- TRUE
+    testG$verbose <- FALSE
     testG$ignorelist <- ""
     testG$ignorelistRepl <- ""
-    debug(testCoverage:::recurseInsertTrace)
+
     test01 <- testCoverage:::recurseInsertTrace(e = expr, envname = 'testG', pos = integer(0), addtrace = TRUE)
-    undebug(testCoverage:::recurseInsertTrace)
+
     traced <-  c("expression({",                                               
         "    `_trace`()",
         "    `_1_16` <- {",

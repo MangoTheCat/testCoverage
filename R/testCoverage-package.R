@@ -11,7 +11,7 @@
 #' @docType package
 #' @name testCoverage-package
 #' @seealso \code{\link{testCoverage}}, \code{\link{pkgCoverage}}, \code{\link{cranCoverage}}, 
-#' \code{\link{selfCoverage}} and \code{vignette("testCoverage", package = "testCoverage")}
+#' \code{\link{selfTest}} and \code{vignette("testCoverage", package = "testCoverage")}
 #' @examples
 #' \dontrun{
 #' demo(saturation)}

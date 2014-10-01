@@ -2,7 +2,8 @@
 \alias{testCoverage}
 \title{Code coverage test files.}
 \usage{
-testCoverage(source.files, test.files, ...)
+testCoverage(source.files = dir("R", full = TRUE),
+  test.files = dir("tests/testthat/", full = TRUE), ...)
 }
 \arguments{
   \item{source.files}{character vector of source code

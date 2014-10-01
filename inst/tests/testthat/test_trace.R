@@ -62,13 +62,14 @@ test_that("createTracedExpression", {
     # test 1
     
     testG <- new.env()
-    testG$verbose <- TRUE
+    testG$verbose <- FALSE
     testG$ignorelist <- ""
     testG$replText <- ""
     testG$idsSet <- cbind(1, 29)
 
     
-    test01 <- testCoverage:::createTracedExpression(sourcefile = file.path(system.file(package = "testCoverage"), "examples", "add", "R", "add.R"), 
+    test01 <- testCoverage:::createTracedExpression(
+        sourcefile = file.path(system.file(package = "testCoverage"), "examples", "add", "R", "add.R"), 
         fileid = 1, envname = "testG")
     
     traced <-  c("expression({",                                               
@@ -107,9 +108,9 @@ test_that("recurseInsertTrace", {
     testG$verbose <- TRUE
     testG$ignorelist <- ""
     testG$ignorelistRepl <- ""
-    
+    debug(testCoverage:::recurseInsertTrace)
     test01 <- testCoverage:::recurseInsertTrace(e = expr, envname = 'testG', pos = integer(0), addtrace = TRUE)
-    
+    undebug(testCoverage:::recurseInsertTrace)
     traced <-  c("expression({",                                               
         "    `_trace`()",
         "    `_1_16` <- {",

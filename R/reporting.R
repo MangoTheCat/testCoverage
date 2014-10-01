@@ -134,7 +134,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   ## source files
   if(exists(".onAttach", envir=.GlobalEnv)) {
     fcat("Removing .onAttach from global environment\n")
-    rm(.onAttach, envir=.GlobalEnv)
+    rm(.onAttach, envir = .GlobalEnv)
   }
   .g$verbose <- verbose
   .g$ignorelist <- ignorelist
@@ -147,12 +147,16 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   
   with(.g, cat("\n", file = outputfile, append = appendOutput))
   
-  sourceCodeList <- list()
-  sourceFileList <- list()
+  NF <- length(sourcefiles)
+  NE <- length(executionfiles)
+  
+  sourceCodeList <- vector(mode = "list", length = NF)
+  sourceFileList <- vector(mode = "list", length = NF)
+  
   lastNumFunDefInSrc <- 0
   
   # Iterate through source files -----------------------------------------------
-  for (fileid in seq(length = length(sourcefiles))) {
+  for (fileid in seq_len(NF)) {
     
     # Auto select first file.
     if(fileid == 1) 
@@ -172,24 +176,28 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
         sourceFileList[[fileid]] <- c(class = tabClass, id = fileid, name = basename(sourcefile))           
       next
     }
-
     
     tracedExpression <- rv$tracedExpression
     
     gpd <- rv$parsedData
     
-    fcat(" Evaluating traced function...\n", verbose = verbose)    
-    eval(tracedExpression, .GlobalEnv)
+    fcat(" Evaluating instrumented code from", basename(sourcefile), "in Global Env\n", verbose = verbose)
     
+    # TODO improvement:
+    # do not allow .g$outputfile to be updated, 
+    # perhaps by copying file to temp, then overwriting
+    # 
+    # alternatively replace with data frame in .g
+    
+    eval(tracedExpression, .GlobalEnv)
     
     thisNumFunDefInSrc <- nrow(read.table(.g$outputfile))
     fcat(" removing", thisNumFunDefInSrc - lastNumFunDefInSrc, 
          "trace points for assigning... \n", verbose = verbose)
     lastNumFunDefInSrc <- thisNumFunDefInSrc
+
     
     ## build <span> html
-    fcat("   ", basename(sourcefile), "OK.\n", verbose = verbose)
-    
     ## only generate span ids that are actually set
     idsSetHere <- .g$idsSet[.g$idsSet[, 1] == fileid, 2, drop = TRUE]
 
@@ -207,9 +215,9 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
   dfIDsSet <- data.frame(.g$idsSet)
   ## This is a long vector that looks like c("2_71", "2_83", "2_86", "2_108", "2_304", ...)
   ## Contains symbol names  
-  strIDsSet <- do.call(paste, c(data.frame(.g$idsSet), sep = "_"))  
+  strIDsSet <- do.call(paste, c(dfIDsSet, sep = "_"))  
   ## This is updated when strIDsSet names are "hit"
-  sumIDsHit <- rep(0, length(strIDsSet))
+  sumIDsHit <- numeric(length(strIDsSet))
 
    
   unitTestList <- list()
@@ -219,35 +227,35 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     attr(unitTestList, "testFramework") <- "testthat"
   }
   
-  allTraces <- vector("list", length=length(executionfiles))
+  allTraces <- vector(mode = "list", length = NE)
   sumTraces <- c()
   
   ## This assumes the "1:n" source file naming scheme.
-  source_file_ids <- seq(length=length(sourcefiles))## sort(unique(dfIDsSet[, 1]))
+  source_file_ids <- seq_len(NF)
   
   ## Adding "empty" levels ensures files with no tests get included properly.
   ## This is due to the use of table() to count hits below.
   dfIDsSet[,1] <- factor(dfIDsSet[, 1], levels = source_file_ids)  
       
   table_of_execution <- matrix(table(dfIDsSet[, 1]), nrow = 1, 
-                               ncol = length(source_file_ids))
+                               ncol = NF)
   colnames(table_of_execution) <- basename(sourcefiles) ## [ source_file_ids ]
   rownames(table_of_execution) <- 'Trace Points'
-  ErrorOccurred = logical(length(executionfiles))
+  ErrorOccurred = logical(NE)
   
-  otables <- vector("list", length(executionfiles))
+  otables <- vector("list", NE)
   names(otables) <- basename(executionfiles)
 
   ## If we've loaded an .onAttach, we need to call it.
   ## Might also do this for ".First.Lib" for pre-2.14 R
   if(exists(".onAttach", envir=.GlobalEnv)){
     fcat(".onAttach was defined. Calling package .onAttach\n")
-     tryCatch(get(".onAttach", envir=.GlobalEnv)("", packagename), error=function(e) print(e))
+    tryCatch(get(".onAttach", envir=.GlobalEnv)("", ".GlobalEnv"), error=function(e) print(e))
   }
 
   # Mask ::: and q() before executing tests. -----------------------------------
-  if (!is.null(refnamespaces))
-    `:::` <- function(pkg, name){
+  if (!is.null(refnamespaces)) {
+    `:::` <- function(pkg, name) {
       m <- match.call()
       pkg <- as.character(substitute(pkg))
       name <- as.character(substitute(name))
@@ -259,6 +267,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
       m[[1]] <- get(':::', envir = asNamespace('base')) 
       eval(m)
     }
+  }
   # protect "q()"
   assign("q", function(...) { warning("q() called from test script!") }, 
          envir = .GlobalEnv)
@@ -308,6 +317,7 @@ buildHTMLReport <- function(sourcefiles, executionfiles,
     table_of_execution <- rbind( table_of_execution, tmp.table )
     otable <- table(factor(idSeen, levels = c(TRUE, FALSE)), dfIDsSet[, 1])
     rownames(otable) <- c("Executed", "Not Executed")
+    colnames(otable) <- basename(sourcefiles)[ as.integer(colnames(otable)) ]
     otables[[basename(executionFile)]] <- otable
 
     unitTestList[[idx]] <- c(id = idx, name = basename(executionFile))

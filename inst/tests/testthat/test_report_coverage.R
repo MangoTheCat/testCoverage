@@ -1,156 +1,295 @@
-# SVN revision:   
-# Date of last change: 2014-7-31
+
+# Date of last change: 2014-10-01
 # Last changed by: ccampbell
 # 
 # Original author: ccampbell
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
   
-context("counting symbol hits")
+context("counting symbol hits in add example")
 
 test_that("add", {
+    
+    # replacing 3 symbols... add, x, y - one function name + 2 internal symbols
+    # setting 2 trace points... add, x 
+    # one instrumented trace point is added at each level of the parse tree
+    
+    # zero tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_a0.html")
     out <- file.path(getwd(), "traceOutput_a0.txt")
     
-    out_a0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "add", "R"), full.names = TRUE), 
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "add", "inst", "tests", "testthat", "tests0"), full.names = TRUE), 
+    cat("  ")
+    
+    out_a0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "add", "R"), full.names = TRUE), 
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+                "add", "inst", "tests", "testthat", "tests0"), full.names = TRUE), 
         reportfile = rpt, outputfile = out,
-        ignorelist = "", writereport = getOption("testCoverageIsReport"), clean = TRUE)
-        
+        ignorelist = "", writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
     a0ex <- structure(list(
             A = structure(c(1L, 0L), 
                 .Dim = c(2L, 1L), 
                 .Dimnames = list(c("Trace Points", "test_add0.R"), "add.R")), 
             E = FALSE, 
             B = structure(list(
-                test_add0.R = structure(0:1, .Dim = c(2L, 1L), .Dimnames = structure(list(c("Executed", "Not Executed"), "add.R"), 
-                .Names = c("", "")), class = "table")), .Names = "test_add0.R")), 
-            .Names = c("A", "E", "B"))
+                test_add0.R = structure(0:1, 
+                    .Dim = c(2L, 1L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), "add.R"), 
+                    .Names = c("", "")), class = "table")), .Names = "test_add0.R")), 
+        .Names = c("A", "E", "B"))
     
     expect_that(out_a0, equals(a0ex))
     
-    
-    cat("\nTODO Fix reportCoverage! Function symbols not counted correctly\n")
-    # curious behaviour
-    #  1 add.R ... 
-    # replacing 3 symbols... add, x, y - one function name + 2 internal symbols
-    # adding 4 original trace points... add, function, x, y
-    # setting 2 trace points... add, x - why is y missed?
+    # tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_a1.html")
     out <- file.path(getwd(), "traceOutput_a1.txt")
     
-    out_a1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "add", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "add", "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out,
-        ignorelist = "", writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_a1$B, is_a("list"))
-    #expect_that(out_a1, is_equivalent_to(cbind(1, 1, "100%")))
-    # or should this be cbind(3, 0, "0%")
-    # one function name + 2 internal symbols
-    # Now this is currently
-    #[[1]]
-    #              
-    #               add.R
-    #  Executed         1
-    #  Not Executed     0
-
+    out_a1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "add", "R"), full.names = TRUE),
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "add", "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out,
+        ignorelist = "", writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    a1ex <- structure(list(
+            A = structure(c(1L, 1L), 
+                .Dim = c(2L, 1L), 
+                .Dimnames = list(c("Trace Points", "test_add1.R"), "add.R")), 
+            E = FALSE, 
+            B = structure(list(
+                test_add0.R = structure(1:0, 
+                    .Dim = c(2L, 1L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), "add.R"), 
+                    .Names = c("", "")), class = "table")), .Names = "test_add1.R")), 
+        .Names = c("A", "E", "B"))
+    
+    expect_that(out_a1, equals(a1ex))
     
 })
 
+context("counting symbol hits in fibonacci example")
+
 test_that("fibonacci", {
+    
+    # zero tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_f0.html")
     out <- file.path(getwd(), "traceOutput_f0.txt")
     
-    out_f0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "fibonacci", "R"), full.names = TRUE), 
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "fibonacci", "inst", "tests", "testthat", "tests0"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out,
-        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_f0$B, is_a("list"))
-    #expect_that(out_f0, is_equivalent_to(cbind(19, 0, "  0%")))
-    # TODO Fix
+    out_f0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "fibonacci", "R"), full.names = TRUE), 
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "fibonacci", "inst", "tests", "testthat", "tests0"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out,
+        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    f0ex <- structure(list(
+            A = structure(c(18L, 0L), 
+                .Dim = c(2L, 1L), 
+                .Dimnames = list(c("Trace Points", "test_fib0.R"), "fib.R")), 
+            E = FALSE, 
+            B = structure(list(
+                test_fib0.R = structure(c(0L, 18L), 
+                    .Dim = c(2L, 1L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), "fib.R"), 
+                    .Names = c("", "")), class = "table")), .Names = "test_fib0.R")), 
+        .Names = c("A", "E", "B"))
+    
+    expect_that(out_f0, equals(f0ex))
+    
+    # tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_f1.html")
     out <- file.path(getwd(), "traceOutput_f1.txt")
     
-    out_f1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "fibonacci", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "fibonacci", "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out,
-        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_f1$B, is_a("list"))
-    expect_that(out_f1$B, equals(structure(list(test_fib1.R = structure(c(15L, 
-    3L), .Dim = c(2L, 1L), .Dimnames = structure(list(c("Executed", 
-    "Not Executed"), "fib.R"), .Names = c("", "")), class = "table")), .Names = "test_fib1.R")))
-
-    # TODO check and update
+    out_f1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "fibonacci", "R"), full.names = TRUE),
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "fibonacci", "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out,
+        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    f1ex <- structure(list(
+            A = structure(c(18L, 15L), 
+                .Dim = c(2L, 1L), 
+                .Dimnames = list(c("Trace Points", "test_fib1.R"), "fib.R")), 
+            E = FALSE, 
+            B = structure(list(
+                test_fib1.R = structure(c(15L, 3L), 
+                    .Dim = c(2L, 1L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), "fib.R"), 
+                    .Names = c("", "")), class = "table")), .Names = "test_fib1.R")), 
+        .Names = c("A", "E", "B"))
+    
+    expect_that(out_f1, equals(f1ex))
+    
+    # tests 100% tracepoints for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_f2.html")
     out <- file.path(getwd(), "traceOutput_f2.txt")
     
-    out_f2 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "fibonacci", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "fibonacci", "inst", "tests", "testthat", "tests2"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out,
-        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_f2$B, is_a("list"))
-    expect_that(out_f2$A, equals(structure(c(18L, 18L), .Dim = c(2L, 
-    1L), .Dimnames = list(c("Trace Points", "test_fib2.R"), "fib.R"))))
+    out_f2 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "fibonacci", "R"), full.names = TRUE),
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "fibonacci", "inst", "tests", "testthat", "tests2"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out,
+        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    f2ex <- structure(list(
+            A = structure(c(18L, 18L), 
+                .Dim = c(2L, 1L), 
+                .Dimnames = list(c("Trace Points", "test_fib2.R"), "fib.R")), 
+            E = FALSE, 
+            B = structure(list(
+                test_fib0.R = structure(c(18L, 0L), 
+                    .Dim = c(2L, 1L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), "fib.R"), 
+                    .Names = c("", "")), class = "table")), .Names = "test_fib2.R")), 
+        .Names = c("A", "E", "B"))
+    
+    expect_that(out_f2, equals(f2ex))
+    
 })
 
+context("counting symbol hits in saturate example")
 
 test_that("saturate", {
+    
+    # zero tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_s0.html")
     out <- file.path(getwd(), "traceOutputs0.txt")
     
-    out_s0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "inst", "tests", "testthat", "tests0"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out,
-        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_s0$B, is_a("list"))
-    #expect_that(out_s0, is_equivalent_to(cbind(66, 0, "  0%")))
-    # TODO Fix Me!
-    cat("\nTODO Fix reportCoverage! Multi-file package not checked correctly\n")
+    out_s0 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "R"), full.names = TRUE),
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "inst", "tests", "testthat", "tests0"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out,
+        ignorelist = NULL, writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    s0ex <- structure(list(
+            A = structure(c(13L, 0L, 29L, 0L), 
+                .Dim = c(2L, 2L), 
+                .Dimnames = list(c("Trace Points", "test_saturate0.R"), c("saturate.R", "saturateHSV.R"))), 
+            E = FALSE, 
+            B = structure(list(
+                test_saturate0.R = structure(c(0L, 13L, 0L, 29L), 
+                    .Dim = c(2L, 2L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), c("saturate.R", "saturateHSV.R")), 
+                    .Names = c("", "")), class = "table")), .Names = "test_saturate0.R")), 
+        .Names = c("A", "E", "B"))
+    
+    expect_that(out_s0, equals(s0ex))
+    
+    # tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_s1.html")
     out <- file.path(getwd(), "traceOutputs1.txt")
     
-    out_s1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out, writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_s1$B, is_a("list"))
-    #expect_that(out_s1, is_equivalent_to(cbind(66, 18, " 27%")))
-    # TODO Fix and check
+    out_s1 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "R"), full.names = TRUE),
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out, writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    s1ex <- structure(list(
+            A = structure(c(13L, 0L, 29L, 16L), 
+                .Dim = c(2L, 2L), 
+                .Dimnames = list(c("Trace Points", "test_saturate1.R"), c("saturate.R", "saturateHSV.R"))), 
+            E = FALSE, 
+            B = structure(list(
+                test_saturate0.R = structure(c(0L, 13L, 16L, 13L), 
+                    .Dim = c(2L, 2L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), c("saturate.R", "saturateHSV.R")), 
+                    .Names = c("", "")), class = "table")), .Names = "test_saturate1.R")), 
+        .Names = c("A", "E", "B"))
+    
+    expect_that(out_s1, equals(s1ex))
+    
+    # tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_s2.html")
     out <- file.path(getwd(), "traceOutput_s2.txt")
     
-    out_s2 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "inst", "tests", "testthat", "tests2"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out, writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_s2$B, is_a("list"))
-    #expect_that(out_s2, is_equivalent_to(cbind(66, 30, " 45%")))
-    # TODO Fix and check
+    out_s2 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "R"), full.names = TRUE),
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "inst", "tests", "testthat", "tests2"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out, writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    s2ex <- structure(list(
+            A = structure(c(13L, 12L, 29L, 16L), 
+                .Dim = c(2L, 2L), 
+                .Dimnames = list(c("Trace Points", "test_saturate2.R"), c("saturate.R", "saturateHSV.R"))), 
+            E = FALSE, 
+            B = structure(list(
+                test_saturate0.R = structure(c(12L, 1L, 16L, 13L), 
+                    .Dim = c(2L, 2L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), c("saturate.R", "saturateHSV.R")), 
+                    .Names = c("", "")), class = "table")), .Names = "test_saturate2.R")), 
+        .Names = c("A", "E", "B"))
+    
+    expect_that(out_s2, equals(s2ex))
+    
+    # tests for instrumented functions
     
     rpt <- file.path(getwd(), "coverage_report_s3.html")
     out <- file.path(getwd(), "traceOutput_s3.txt")
     
-    out_s3 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), "saturate", "inst", "tests", "testthat", "tests3"), full.names = TRUE), 
-        reportfile = rpt, outputfile = out, writereport = getOption("testCoverageIsReport"), clean = TRUE)
+    cat("  ")
     
-    expect_that(out_s3$B, is_a("list"))
-    #expect_that(out_s3, is_equivalent_to(cbind(66, 66, "100%")))
-    # TODO Fix and check
+    out_s3 <- reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "R"), full.names = TRUE),
+        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
+            "saturate", "inst", "tests", "testthat", "tests3"), full.names = TRUE), 
+        reportfile = rpt, outputfile = out, writereport = getOption("testCoverageIsReport"), 
+        clean = TRUE, verbose = FALSE)
+    
+    s3ex <- structure(list(
+            A = structure(c(13L, 13L, 0L, 29L, 23L, 6L), 
+                .Dim = c(3L, 2L), 
+                .Dimnames = list(c("Trace Points", "test_saturate3.R", "test_saturateRGB3.R"), 
+                    c("saturate.R", "saturateHSV.R"))), 
+            E = c(FALSE, FALSE), 
+            B = structure(list(
+                test_saturate3.R = structure(c(13L, 0L, 23L, 6L), 
+                    .Dim = c(2L, 2L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), c("saturate.R", "saturateHSV.R")), 
+                    .Names = c("", "")), class = "table"), 
+                test_saturateRGB3.R = structure(c(0L, 13L, 6L, 23L), 
+                    .Dim = c(2L, 2L), 
+                    .Dimnames = structure(list(c("Executed", "Not Executed"), c("saturate.R", "saturateHSV.R")), 
+                    .Names = c("", "")), class = "table")), 
+                .Names = c("test_saturate3.R", "test_saturateRGB3.R"))), 
+            .Names = c("A", "E", "B"))
+    
+    expect_that(out_s3, equals(s3ex))
 })
 
 
@@ -158,5 +297,6 @@ context("check invalid package structure throws error")
 
 test_that("add", {
 
-    expect_that(reportCoverage("add", rdir = file.path("inst", "examples", "add")), throws_error("no source files selected"))
+    expect_that(reportCoverage("add", rdir = file.path("inst", "examples", "add")), 
+        throws_error("no source files selected"))
 })

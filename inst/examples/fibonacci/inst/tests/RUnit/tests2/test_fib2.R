@@ -19,6 +19,11 @@ test.fib2 <- function() {
 }
 
 test.fib2.error <- function() {
+
+    wn <- getOption("warn")
+    
+    options("warn" = -1)
+    
 	checkException(fib("a"), silent = TRUE)
 	
 	checkException(fib(), silent = TRUE)
@@ -27,6 +32,8 @@ test.fib2.error <- function() {
 	
 	checkException(fib(Inf), silent = TRUE)
 	
+    options("warn" = wn)
+    
 	checkException(fib(1:3), silent = TRUE)
 	
 }

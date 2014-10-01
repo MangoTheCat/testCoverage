@@ -61,8 +61,11 @@
 reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getwd(), 
   rdir = file.path(packagedir, "R"), unittestdir = file.path(packagedir, "inst", "tests"), 
   sourcefiles = NULL, executionfiles = NULL, reportfile = file.path(htmlwd, "coverage_report.html"), 
-  outputfile = file.path(htmlwd, "traceOutput.txt"), ignorelist = "", writereport = TRUE, clean = FALSE, 
-  refnamespaces = NULL, isrunit = FALSE, runitfileregexp = "^test_.+\\.[rR]$", runitfuncregexp = "^test.+") {
+  outputfile = file.path(htmlwd, "traceOutput.txt"), ignorelist = "", 
+  writereport = TRUE, clean = FALSE, verbose = TRUE, refnamespaces = NULL, 
+  isrunit = FALSE, runitfileregexp = "^test_.+\\.[rR]$", runitfuncregexp = "^test.+") {
+  
+  # seek information about package
   
   if (!missing(packagename)) { 
     packagename <<- packagename 
@@ -115,7 +118,7 @@ reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getw
   
   if (isrunit) {
     tmp.dir <- tempdir()
-    for (i in 1:length(executionfiles)) {
+    for (i in seq_along(executionfiles)) {
       tmp.executionfiles <- executionfiles[i]
       tmp.env <- new.env()
       source(tmp.executionfiles, local = tmp.env)
@@ -138,6 +141,7 @@ reportCoverage <- function(packagename = "", packagedir = getwd(), htmlwd = getw
     ignorelist = ignorelist, 
     writereport = writereport, 
     clean = clean, 
+    verbose = verbose,
     refnamespaces = refnamespaces,
     isrunit = isrunit)
   

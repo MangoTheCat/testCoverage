@@ -33,17 +33,17 @@ test.saturateRGB3 <- function() {
 test.saturateRGB3.remaining <- function() {
 	eg1 <- matrix((1:6) * 32, nrow = 2, ncol = 3)
     
-	checkException(saturateHSV(eg1, fixed = 0.5))
+	checkException(saturateHSV(eg1, fixed = 0.5), silent = TRUE)
 
     eg2 <- matrix(letters[1:6], nrow = 3, ncol = 2)
     
-	checkException(saturateHSV(eg2, sat = 2))
+	checkException(saturateHSV(eg2, sat = 2), silent = TRUE)
 
     eg3 <- matrix((1:6) * 32, nrow = 3, ncol = 2)
     
-	checkException(saturateHSV(eg3, sat = NA))
+	checkException(saturateHSV(eg3, sat = NA), silent = TRUE)
 	
-	checkException(saturateHSV(eg3, fixed = NA))
+	checkException(saturateHSV(eg3, fixed = NA), silent = TRUE)
     
     out5 <- matrix(c(32, 0, 96, 128, 0, 192), nrow = 3)
     

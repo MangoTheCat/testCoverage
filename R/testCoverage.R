@@ -9,8 +9,8 @@
 #' testthat tests are assumed by default, otherwise see 
 #' \code{\link{reportCoverage}} for the necessary parameters.
 #'
-#' @param source.files character vector of source code filenames
-#' @param test.files character vector of unit test filenames
+#' @param sourcefiles character vector of source code filenames
+#' @param testfiles character vector of unit test filenames
 #' @param ... parameters to pass onto reportCoverage
 #' @return A list containing summary coverage, errors and individual coverage.
 #'  Side effect: A webpage of the report will be opened.
@@ -26,6 +26,6 @@
 #' \code{\link{cranCoverage}}
 #' @author Mango Solutions\email{support@@mango-solutions.com}
 #' @export
-testCoverage <- function(source.files, test.files, ...) {
-  reportCoverage(sourcefiles = source.files, executionfiles = test.files, ...)
+testCoverage <- function(sourcefiles, testfiles, ...) {
+  reportCoverage(sourcefiles = sourcefiles, executionfiles = testfiles, ...)
 }

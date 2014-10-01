@@ -274,38 +274,40 @@ createTracedExpression <- function(sourcefile, fileid, envname = '.g') {
     changeIDx <- gpd$token %in% c("SYMBOL", "SYMBOL_FUNCTION_CALL")
   }
   
-  ## create new symbols of form _<file_num>_<symbol_num>
+  # go through parse tree
+  # glue symbols to their unique IDs
+  
+  # create new symbols of form _<file_num>_<symbol_num>
   gpd$replText[changeIDx] <- paste0("`_", fileid, "_", gpd$id, "`")[changeIDx]
   
-  ## collapse the altered symbols to get equivalent code we can parse
+  # collapse the altered symbols to get equivalent code we can parse
   replText <- paste(sapply(split(gpd$replText, gpd$line1), paste0, 
     collapse = " "), collapse = "\n")
   
   ignorelist <- get("ignorelist", envir = get(envname))
   
-  ## ignore list: don't add any tracers to here 
+  # ignore list: don't add any tracers to here 
   ignorelistRepl <- gpd$replText[gpd$text %in% ignorelist]
-  ## remove backticks
+  # remove backticks
   ignorelistRepl <- substr(ignorelistRepl, start = 2, 
     stop = nchar(ignorelistRepl) - 1)
   
-  ## the env .g lived in global -> moved to inside functions
-  assign("ignorelistRepl", value = ignorelistRepl, envir = get(envname)) # read by recurseInsertTrace
+  # the env .g lived in global -> moved to inside functions
+  assign("ignorelistRepl", value = ignorelistRepl, envir = get(envname)) 
+  # read by recurseInsertTrace
   assign("gpd", value = gpd, envir = get(envname))
   
   verbose <- get("verbose", envir = get(envname))
   
   fcat("replacing", sum(changeIDx), "symbols... ", verbose = verbose)
   
+  # glue trace functions to each symbol.
+  # join each ID to each preceding trace as arguments.
+  # one tracepoint is added to code at each level of the parse tree.
+
   symTrace <- recurseInsertTrace(e = parse(text = replText), envname = envname, 
     addtrace = TRUE)
   
-  ## go thru parse tree, set symbols back to originals and add args to trace
-  # note that calls to function are currently traced although they are not instrumented
-  # TODO check this is correct and prevent function from being instrumented if not needed
-  # removed message to make behaviour easier to understand.
-  #fcat("adding", length(gregexpr(pattern = "_trace", as.character(symTrace))[[1]]), "original trace points... ", verbose = verbose)
-
   assign("lastTrace", value = NULL, envir = get(envname))
   
   exprTrace <- recurseSetupTrace(e = symTrace, envname = envname)

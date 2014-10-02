@@ -13,7 +13,9 @@ not affecting other units
 * make it easier to check for bugs by providing a framework for passing in 
 a range of inputs that other parts of your code, or your users, might provide
 
-**Instrumentation**. The package replaces symbols in the code to be tested with a unique identifier.
+**Instrumentation**. This package uses the alternate parser of R-3.0 to 
+instrument R code, and record whether the code is run by tests. 
+The package replaces symbols in the code to be tested with a unique identifier.
 This is then injected into a tracing function that will report each time 
 the symbol is called. The first symbol at each level of the expression tree is 
 traced, allowing the coverage of code branches to be checked. 
@@ -22,9 +24,6 @@ traced, allowing the coverage of code branches to be checked.
 and HTML report which allows you to see your code, with highlights to show whether
 the the code is tested or not. This can also be broken down by test script 
 while assessing which scripts need to be extended.
-
-This package uses the alternate parser of R-3.0 to 
-instrument R code, and record whether the code is run by tests. 
 
 ## Install
 Installation from github requires the devtools package to be installed.
@@ -58,21 +57,35 @@ install.packages("stringr", dependencies = TRUE)
 cranCoverage("stringr")
 ```
 
-## Scripts 
+## Run Test Scripts 
 ```R
-# example saturate 1 - partial coverage
-reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
-        "saturate", "R"), full.names = TRUE),
-    executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
-        "saturate", "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
-    reportfile = "testCoverage_saturate_example1.html", writereport = TRUE, clean = TRUE)
+loc <- file.path(getOption("testCoverageExpFolder"), "saturate")
 
-# example saturate 3 - complete coverage
-reportCoverage(sourcefiles = list.files(file.path(getOption("testCoverageExpFolder"), 
-            "saturate", "R"), full.names = TRUE),
-        executionfiles = list.files(file.path(getOption("testCoverageExpFolder"), 
-            "saturate", "inst", "tests", "testthat", "tests3"), full.names = TRUE), 
-        reportfile = "testCoverage_saturate_example3.html", outputfile = out, writereport = TRUE, clean = TRUE)
+require(testthat)
+
+# example saturate - testthat partial coverage
+reportCoverage(sourcefiles = list.files(file.path(loc, "R"), full.names = TRUE),
+    executionfiles = list.files(file.path(loc, 
+        "inst", "tests", "testthat", "tests1"), full.names = TRUE), 
+    reportfile = "testCoverage_saturate_example1.html", 
+    writereport = TRUE, clean = TRUE)
+
+# example saturate - testthat complete coverage
+reportCoverage(sourcefiles = list.files(file.path(loc, "R"), full.names = TRUE),
+    executionfiles = list.files(file.path(loc, 
+        "inst", "tests", "testthat", "tests3"), full.names = TRUE), 
+    reportfile = "testCoverage_saturate_example3.html", 
+    writereport = TRUE, clean = TRUE)
+
+require(RUnit)
+
+# example saturate - RUnit partial coverage
+reportCoverage(sourcefiles = list.files(file.path(loc, "R"), full.names = TRUE),
+    executionfiles = list.files(file.path(loc, 
+            "inst", "tests", "RUnit", "tests2"), full.names = TRUE), 
+    reportfile = "testCoverage_saturate_example3.html", 
+    writereport = TRUE, clean = TRUE, 
+    isrunit = TRUE, runitfileregexp = "^test_.+\\.[rR]$", runitfuncregexp = "^test.+")
 ```
 
 ## License

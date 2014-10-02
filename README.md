@@ -83,7 +83,7 @@ require(RUnit)
 reportCoverage(sourcefiles = list.files(file.path(loc, "R"), full.names = TRUE),
     executionfiles = list.files(file.path(loc, 
             "inst", "tests", "RUnit", "tests2"), full.names = TRUE), 
-    reportfile = "testCoverage_saturate_example3.html", 
+    reportfile = "testCoverage_saturate_example2.html", 
     writereport = TRUE, clean = TRUE, 
     isrunit = TRUE, runitfileregexp = "^test_.+\\.[rR]$", runitfuncregexp = "^test.+")
 ```

@@ -1,12 +1,12 @@
 # SVN revision:   
-# Date of last change: 2013-11-22
+# Date of last change: 2014-10-01
 # Last changed by: ccampbell
 # 
 # Original author: ccampbell
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
-context("calculate fibonacci numbers")
+context("calculate fibonacci numbers complete")
 
 test_that("hit some symbols", {
     
@@ -23,6 +23,10 @@ test_that("hit some symbols", {
 
 test_that("hit error checking symbols", {
     
+    wn <- getOption("warn")
+    
+    options("warn" = -1)
+    
     expect_that(fib("a"), throws_error("n not recognized"))
     
     expect_that(fib(), throws_error("'n' is missing"))
@@ -30,6 +34,8 @@ test_that("hit error checking symbols", {
     expect_that(fib(0), throws_error("n should be an integer greater than 0"))
     
     expect_that(fib(Inf), throws_error("n not recognized"))
+    
+    options("warn" = wn)
     
     expect_that(fib(1:3), throws_error("n must be length 1"))
 })

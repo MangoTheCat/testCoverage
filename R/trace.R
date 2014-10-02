@@ -1,9 +1,8 @@
-# SVN revision:   $
-# Date of last change: 2013-09-29 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-25 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
 
@@ -67,6 +66,7 @@ recurseInsertTrace <- function(e, envname = '.g', pos = integer(0),
         
         if (length(firstSibling) == 1 && as.character(firstSibling) %in% 
           c("~", ignorelistRepl)) {
+
           
           return(e)
           
@@ -82,7 +82,7 @@ recurseInsertTrace <- function(e, envname = '.g', pos = integer(0),
     
     idx <- 1
     
-    while(TRUE) { # TODO: check opinions on whether this is nice syntax
+    while(TRUE) {
       
       if (idx > length(getAtPos(e = e, pos = pos))) { break }
       
@@ -142,9 +142,14 @@ recurseSetupTrace <- function(e, envname = '.g', pos = integer(0)) {
     
     gpd <- get("gpd", envir = get(envname))
     
-#    e[[pos]] <- as.symbol(gpd$text[gpd$replText == paste0("`", dpx, "`")])
-    # `%+%` will be as.symbol changed to ``%+%`` incorrectly
-    e[[pos]] <- parse(text=gpd$text[gpd$replText == paste0("`", dpx, "`")])[[1]]
+	## If it's something like `%>%`, don't quote it again
+	## Congratulations to Tal Galili
+	matchingSymbol <- gpd$text[gpd$replText == paste0("`", dpx, "`")]
+	if(grepl("^`.*`$", matchingSymbol)){
+	  e[[pos]] <- parse(text=matchingSymbol)[[1]]
+	} else {
+      e[[pos]] <- as.symbol(matchingSymbol)
+	}
   }
   
   if (is.recursive(x)) {
@@ -167,14 +172,14 @@ recurseSetupTrace <- function(e, envname = '.g', pos = integer(0)) {
 #' @rdname testCoverage-internal
 
 `_trace` <- function(idx = NULL, envname = '.g') {
-  
-  if (!missing(idx)) {
+ 
+    if (!missing(idx)) {
     
     traceRecord <- get("traceRecord", envir = get(envname))
     
     if (get("traceonce", envir = get(envname))) {
-      
-      if (paste(idx, collapse = "_") %in% traceRecord) {
+      ## A package might over-ride %in% (!)
+      if (base::`%in%`(paste(idx, collapse = "_"), traceRecord)) {
         
         return(invisible(NULL))
         
@@ -269,48 +274,48 @@ createTracedExpression <- function(sourcefile, fileid, envname = '.g') {
     changeIDx <- gpd$token %in% c("SYMBOL", "SYMBOL_FUNCTION_CALL")
   }
   
-  ## create new symbols of form _<file_num>_<symbol_num>
+  # go through parse tree
+  # glue symbols to their unique IDs
+  
+  # create new symbols of form _<file_num>_<symbol_num>
   gpd$replText[changeIDx] <- paste0("`_", fileid, "_", gpd$id, "`")[changeIDx]
   
-  ## collapse the altered symbols to get equivalent code we can parse
+  # collapse the altered symbols to get equivalent code we can parse
   replText <- paste(sapply(split(gpd$replText, gpd$line1), paste0, 
     collapse = " "), collapse = "\n")
   
   ignorelist <- get("ignorelist", envir = get(envname))
   
-  ## ignore list: don't add any tracers to here 
+  # ignore list: don't add any tracers to here 
   ignorelistRepl <- gpd$replText[gpd$text %in% ignorelist]
-  ## remove backticks
+  # remove backticks
   ignorelistRepl <- substr(ignorelistRepl, start = 2, 
     stop = nchar(ignorelistRepl) - 1)
   
-  ## the env .g lived in global -> moved to inside functions
-  assign("ignorelistRepl", value = ignorelistRepl, envir = get(envname)) # read by recurseInsertTrace
+  # the env .g lived in global -> moved to inside functions
+  assign("ignorelistRepl", value = ignorelistRepl, envir = get(envname)) 
+  # read by recurseInsertTrace
   assign("gpd", value = gpd, envir = get(envname))
   
   verbose <- get("verbose", envir = get(envname))
   
   fcat("replacing", sum(changeIDx), "symbols... ", verbose = verbose)
   
+  # glue trace functions to each symbol.
+  # join each ID to each preceding trace as arguments.
+  # one tracepoint is added to code at each level of the parse tree.
+
   symTrace <- recurseInsertTrace(e = parse(text = replText), envname = envname, 
     addtrace = TRUE)
   
-  ## go thru parse tree, set symbols back to originals and add args to trace
-  # note that calls to function are currently traced although they are not instrumented
-  # TODO check this is correct and prevent function from being instrumented if not needed
-  # removed message to make behaviour easier to understand.
-  #fcat("adding", length(gregexpr(pattern = "_trace", as.character(symTrace))[[1]]), "original trace points... ", verbose = verbose)
-
   assign("lastTrace", value = NULL, envir = get(envname))
   
   exprTrace <- recurseSetupTrace(e = symTrace, envname = envname)
-  fcat("setting", 
-    sum(sapply(gregexpr(pattern = "`_trace`\\(c", as.character(exprTrace)), length)),
-    "trace points... \n", verbose = verbose)
+  fcat("setting", length(gregexpr(
+    pattern = "`_trace`\\(c", as.character(exprTrace))[[1]]), 
+    "trace points... \n", verbose = verbose)	
   
   attr(exprTrace, "srcref") <- NULL
-  attr(exprTrace, "srcfile") <- NULL
-  attr(exprTrace, "wholeSrcref") <- NULL
   
   return(list(symbolExpression = symTrace, 
       tracedExpression = exprTrace, 

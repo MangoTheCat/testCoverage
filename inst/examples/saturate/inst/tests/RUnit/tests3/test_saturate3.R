@@ -27,7 +27,7 @@ test.saturate3.remaining <- function() {
     
     eg2 <- c("#FFC6E3", "a")
     
-	checkException(saturate(eg2, sat = 2))
+	checkException(saturate(eg2, sat = 2), silent = TRUE)
 
     out3 <- c("#FFFFFF", "#FFFFFF", "#EEEEEE")
     

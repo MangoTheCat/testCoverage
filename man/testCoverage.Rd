@@ -2,14 +2,13 @@
 \alias{testCoverage}
 \title{Code coverage test files.}
 \usage{
-testCoverage(source.files, test.files, ...)
+testCoverage(sourcefiles, testfiles, ...)
 }
 \arguments{
-  \item{source.files}{character vector of source code
+  \item{sourcefiles}{character vector of source code
   filenames}
 
-  \item{test.files}{character vector of unit test
-  filenames}
+  \item{testfiles}{character vector of unit test filenames}
 
   \item{...}{parameters to pass onto reportCoverage}
 }

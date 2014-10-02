@@ -7,9 +7,9 @@ reportCoverage(packagename = "", packagedir = getwd(), htmlwd = getwd(),
   "inst", "tests"), sourcefiles = NULL, executionfiles = NULL,
   reportfile = file.path(htmlwd, "coverage_report.html"),
   outputfile = file.path(htmlwd, "traceOutput.txt"), ignorelist = "",
-  writereport = TRUE, clean = FALSE, refnamespaces = NULL,
-  isrunit = FALSE, runitfileregexp = "^test_.+\\\\.[rR]$",
-  runitfuncregexp = "^test.+")
+  writereport = TRUE, clean = FALSE, verbose = TRUE,
+  refnamespaces = NULL, isrunit = FALSE,
+  runitfileregexp = "^test_.+\\\\.[rR]$", runitfuncregexp = "^test.+")
 }
 \arguments{
   \item{packagename}{Name of package. Optional if
@@ -94,7 +94,8 @@ reportCoverage(
 #unnecessary.
 reportCoverage(
  packagedir = system.file("examples/add/", package = "testCoverage"),
- unittestdir = system.file("examples/add/inst/tests/testthat/tests1", package = "testCoverage"))
+ unittestdir = system.file("examples/add/inst/tests/testthat/tests1",
+   package = "testCoverage"))
 }
 }
 \author{

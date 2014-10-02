@@ -41,7 +41,7 @@ cranCoverage <- function(packages, test.dir = NULL, ...) {
         reportfile = sprintf('coverage_report_%s.html', package), 
         outputfile = sprintf('trace_%s.txt', package), 
         unittestdir = test.dir, ...), 
-    silent = TRUE, ...)
+    silent = FALSE, ...)
     assign(package, test.result, envir = executionL)
   }
 

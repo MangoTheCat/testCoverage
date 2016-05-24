@@ -1,0 +1,10 @@
+Package: saales
+Type: Package
+Title: Example sales Source for testCoverage
+Version: 1.0
+Date: 2016-01-08
+Author: ccampbell
+Maintainer: Mango Solutions <sales@mango-solutions.com>
+Description: Example Package for testCoverage
+License: GPL-2
+RoxygenNote: 5.0.1

@@ -1,0 +1,11 @@
+Package: incr
+Type: Package
+Title: Example incr Source for testCoverage
+Version: 1.0
+Date: 2014-12-12
+Author: ccampbell
+Maintainer: Mango Solutions <sales@mango-solutions.com>
+Description: Example Package for testCoverage
+License: GPL-2
+Collate:
+    'incr.R'

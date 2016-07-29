@@ -33,6 +33,21 @@ test_that("hit symbols in expected", {
     expect_error(object = expected(x = x, when = "2015-12-22"), 
         regex = "when must be Date")
     
+    x@Date[1] <- as.Date("2014-12-22")
+    expect_error(object = validObject(x), regex = "Dates out of range")
+    
+    x@Date <- x@Date[2:3]
+    expect_error(object = validObject(x), 
+        regex = "Expected equal number of Daily.Total and Date")
+    
+    x@Date <- x@Date[c(1, 1, 2)]
+    x@Outlet <- character(0)
+    expect_error(object = validObject(x), 
+        regex = "Expected single Outlet")
+    
+    x@Outlet <- "BRADFORD-ON-AVON"
+    expect_error(object = validObject(x), 
+        regex = "Invalid Outlet")
 })
 
 

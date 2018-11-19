@@ -1,6 +1,9 @@
 testCoverage
 ============
 
+[![Project Status: Unsupported – The project has reached a stable, usable state but the author(s) have ceased all work on it.](https://www.repostatus.org/badges/latest/unsupported.svg)](https://www.repostatus.org/#unsupported)
+
+
 Clear box unit test coverage utility for R code. 
 A key concept of writing high quality code is that each conceptual module
 of code is split into units. Each unit can be tested in isolation to verify that 
